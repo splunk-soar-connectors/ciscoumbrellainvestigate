@@ -16,12 +16,12 @@
 #
 # Phantom App imports
 import phantom.app as phantom
-from phantom.base_connector import BaseConnector
-from phantom.action_result import ActionResult
-
-from ciscoumbrellainvestigate_consts import *
 import requests
 import simplejson as json
+from phantom.action_result import ActionResult
+from phantom.base_connector import BaseConnector
+
+from ciscoumbrellainvestigate_consts import *
 
 
 class CiscoUmbrellaInvestigateConnector(BaseConnector):
@@ -404,8 +404,9 @@ class CiscoUmbrellaInvestigateConnector(BaseConnector):
 
 
 def main():
-    import pudb
     import argparse
+
+    import pudb
 
     pudb.set_trace()
 
