@@ -4,12 +4,12 @@
     "description": "This app implements investigative actions by querying the Cisco Umbrella Investigate cloud service",
     "type": "reputation",
     "main_module": "ciscoumbrellainvestigate_connector.py",
-    "app_version": "1.0.3",
+    "app_version": "1.1.0",
     "utctime_updated": "2021-12-11T00:08:36.000000Z",
     "product_vendor": "Cisco",
     "product_name": "Cisco Umbrella Investigate",
     "product_version_regex": ".*",
-    "min_phantom_version": "4.9.39220",
+    "min_phantom_version": "5.0.0",
     "python_version": "3",
     "fips_compliant": true,
     "publisher": "Splunk",
@@ -18,7 +18,7 @@
     "logo_dark": "logo_cisco_dark.svg",
     "license": "Copyright (c) 2021 Splunk Inc.",
     "latest_tested_version": [
-        "Cloud, API https://investigate.api.umbrella.com/, February 8 2021"
+        "Cloud, API https://investigate.api.umbrella.com/, December 23 2021"
     ],
     "configuration": {
         "access_token": {
