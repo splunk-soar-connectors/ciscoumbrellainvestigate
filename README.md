@@ -2,11 +2,11 @@
 # Cisco Umbrella Investigate
 
 Publisher: Splunk  
-Connector Version: 1\.1\.1  
+Connector Version: 1\.1\.3  
 Product Vendor: Cisco  
 Product Name: Cisco Umbrella Investigate  
 Product Version Supported (regex): "\.\*"  
-Minimum Product Version: 5\.0\.0  
+Minimum Product Version: 5\.1\.0  
 
 This app implements investigative actions by querying the Cisco Umbrella Investigate cloud service
 
