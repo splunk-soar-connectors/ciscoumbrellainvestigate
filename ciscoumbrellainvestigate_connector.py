@@ -60,8 +60,7 @@ class CiscoUmbrellaInvestigateConnector(BaseConnector):
         status_code = None
 
         try:
-            r = requests.get(  # nosemgrep: python.requests.best-practice.use-timeout.use-timeout
-                self._base_url + endpoint, headers=headers, params=request_params)
+            r = requests.get(self._base_url + endpoint, headers=headers, params=request_params, timeout=DEFAULT_TIMEOUT)
         except Exception as e:
             return (action_result.set_status(phantom.APP_ERROR, INVESTIGATE_ERR_SERVER_CONNECTION, e), resp_json, status_code)
 
