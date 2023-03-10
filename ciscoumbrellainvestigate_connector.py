@@ -69,8 +69,9 @@ class CiscoUmbrellaInvestigateConnector(BaseConnector):
             if r.text.lower() == 'no data':
                 return action_result.set_status(phantom.APP_ERROR, "API returned no data"), resp_json, status_code
 
-            if not ('json' in r.headers.get('Content-Type', '')):
-                return action_result.set_status(phantom.APP_ERROR, r.text), {}, r.status_code
+            if 400 <= r.status_code <= 599:
+                message = "Error from server. Status code: {}, Message: {}".format(r.status_code, r.text)
+                return action_result.set_status(phantom.APP_ERROR, message), {}, status_code
 
             resp_json = r.json()
             status_code = r.status_code
