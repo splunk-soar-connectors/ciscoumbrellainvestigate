@@ -69,11 +69,11 @@ class CiscoUmbrellaInvestigateConnector(BaseConnector):
             if r.text.lower() == 'no data':
                 return action_result.set_status(phantom.APP_ERROR, "API returned no data"), resp_json, status_code
 
-            if 400 <= r.status_code <= 599:
-                message = "Error from server. Status code: {}, Message: {}".format(r.status_code, r.text)
-                return action_result.set_status(phantom.APP_ERROR, message), {}, status_code
+            if 'json' in r.headers.get('Content-Type', ''):
+                resp_json = r.json()
+            else:
+                resp_json = {'error': r.text}
 
-            resp_json = r.json()
             status_code = r.status_code
         except Exception as e:
             self.error_print("Unable to parse response", e)
