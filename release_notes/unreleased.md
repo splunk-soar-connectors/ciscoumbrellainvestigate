@@ -1,2 +1,2 @@
 **Unreleased**
-* Handled HTML response [PAPP-29411]
+* Handled non-JSON response [PAPP-29411]
