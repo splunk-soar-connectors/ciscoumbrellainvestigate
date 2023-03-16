@@ -35,6 +35,12 @@ Below are the default ports used by Splunk SOAR.
 | **http**     | tcp                | 80   |
 | **https**    | tcp                | 443  |
 
+## Note:
+
+-   Kindly refer [official
+    documentation](https://developer.cisco.com/docs/cloud-security/#!introduction) for API rate
+    limits
+
 
 ### Configuration Variables
 The below configuration variables are required for this Connector to operate.  These variables are specified when configuring a Cisco Umbrella Investigate asset in SOAR.
