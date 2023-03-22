@@ -1,6 +1,6 @@
 # File: ciscoumbrellainvestigate_connector.py
 #
-# Copyright (c) 2021-2022 Splunk Inc.
+# Copyright (c) 2021-2023 Splunk Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -40,7 +40,7 @@ class CiscoUmbrellaInvestigateConnector(BaseConnector):
 
         # Base URL
         self._base_url = INVESTIGATE_REST_API_URL
-        if (self._base_url.endswith('/')):
+        if self._base_url.endswith('/'):
             self._base_url = self._base_url[:-1]
 
         self._host = self._base_url[self._base_url.find('//') + 2:]
@@ -62,27 +62,31 @@ class CiscoUmbrellaInvestigateConnector(BaseConnector):
         try:
             r = requests.get(self._base_url + endpoint, headers=headers, params=request_params, timeout=DEFAULT_TIMEOUT)
         except Exception as e:
-            return (action_result.set_status(phantom.APP_ERROR, INVESTIGATE_ERR_SERVER_CONNECTION, e), resp_json, status_code)
+            return action_result.set_status(phantom.APP_ERROR, INVESTIGATE_ERR_SERVER_CONNECTION, e), resp_json, status_code
 
         # self.debug_print('REST url: {0}'.format(r.url))
         try:
-            if (r.text.lower() == 'no data'):
-                return (action_result.set_status(phantom.APP_ERROR, "API returned no data"), resp_json, status_code)
+            if r.text.lower() == 'no data':
+                return action_result.set_status(phantom.APP_ERROR, "API returned no data"), resp_json, status_code
 
-            resp_json = r.json()
+            if 'json' in r.headers.get('Content-Type', ''):
+                resp_json = r.json()
+            else:
+                resp_json = {'error': r.text}
+
             status_code = r.status_code
         except Exception as e:
-            self.debug_print("Unable to parse response", e)
-            return (action_result.set_status(phantom.APP_ERROR, "Unable to parse response"), resp_json, status_code)
+            self.error_print("Unable to parse response", e)
+            return action_result.set_status(phantom.APP_ERROR, "Unable to parse response"), resp_json, status_code
 
-        if (r.status_code == 204):  # success, but no data
-            return (phantom.APP_SUCCESS, resp_json, status_code)
+        if r.status_code == 204:  # success, but no data
+            return phantom.APP_SUCCESS, resp_json, status_code
 
-        if (r.status_code != requests.codes.ok):  # pylint: disable=E1101
+        if r.status_code != requests.codes.ok:  # pylint: disable=E1101
             return (action_result.set_status(phantom.APP_ERROR, INVESTIGATE_ERR_FROM_SERVER, status=r.status_code,
                 message=resp_json.get('error', resp_json.get('errorMessage', 'N/A'))), resp_json, status_code)
 
-        return (phantom.APP_SUCCESS, resp_json, status_code)
+        return phantom.APP_SUCCESS, resp_json, status_code
 
     def _test_connectivity(self, param):
 
@@ -98,9 +102,9 @@ class CiscoUmbrellaInvestigateConnector(BaseConnector):
 
         self.save_progress(INVESTIGATE_MSG_GET_DOMAIN_TEST)
 
-        ret_val, response, status_code = self._make_rest_call(endpoint, None, action_result)
+        ret_val, _, _ = self._make_rest_call(endpoint, None, action_result)
 
-        if (phantom.is_fail(ret_val)):
+        if phantom.is_fail(ret_val):
             self.debug_print(action_result.get_message())
             action_result.set_status(phantom.APP_ERROR, action_result.get_message())
             self.save_progress(INVESTIGATE_ERR_CONNECTIVITY_TEST)
@@ -113,16 +117,16 @@ class CiscoUmbrellaInvestigateConnector(BaseConnector):
 
         endpoint = '/domains/categorization/{0}?showLabels'.format(domain)
 
-        ret_val, response, status_code = self._make_rest_call(endpoint, None, action_result)
+        ret_val, response, _ = self._make_rest_call(endpoint, None, action_result)
 
-        if (phantom.is_fail(ret_val)):
+        if phantom.is_fail(ret_val):
             self.debug_print(action_result.get_message())
             action_result.set_status(phantom.APP_ERROR, action_result.get_message())
             return phantom.APP_ERROR
 
         # parse the category response
         domain_cat_info = response.get(domain)
-        if (not domain_cat_info):
+        if not domain_cat_info:
             return action_result.set_status(phantom.APP_ERROR, "Queried domain not found in response")
 
         try:
@@ -146,16 +150,16 @@ class CiscoUmbrellaInvestigateConnector(BaseConnector):
 
         endpoint = '/links/name/{0}.json'.format(domain)
 
-        ret_val, response, status_code = self._make_rest_call(endpoint, None, action_result)
+        ret_val, response, _ = self._make_rest_call(endpoint, None, action_result)
 
-        if (phantom.is_fail(ret_val)):
+        if phantom.is_fail(ret_val):
             self.debug_print(action_result.get_message())
             action_result.set_status(phantom.APP_ERROR, action_result.get_message())
             return phantom.APP_ERROR
 
         # parse the response
         links = response.get('tb1')
-        if (links):
+        if links:
             data[INVESTIGATE_JSON_RELATIVE_LINKS] = links
             summary.update({INVESTIGATE_JSON_TOTAL_RELATIVE_LINKS: len(links)})
         else:
@@ -167,16 +171,16 @@ class CiscoUmbrellaInvestigateConnector(BaseConnector):
 
         endpoint = '/recommendations/name/{0}.json'.format(domain)
 
-        ret_val, response, status_code = self._make_rest_call(endpoint, None, action_result)
+        ret_val, response, _ = self._make_rest_call(endpoint, None, action_result)
 
-        if (phantom.is_fail(ret_val)):
+        if phantom.is_fail(ret_val):
             self.debug_print(action_result.get_message())
             action_result.set_status(phantom.APP_ERROR, action_result.get_message())
             return phantom.APP_ERROR
 
         # parse the response
         co_occurances = response.get('pfs2')
-        if (co_occurances):
+        if co_occurances:
             data[INVESTIGATE_JSON_CO_OCCUR] = co_occurances
             summary.update({INVESTIGATE_JSON_TOTAL_OCO_OCCUR: len(co_occurances)})
         else:
@@ -190,13 +194,13 @@ class CiscoUmbrellaInvestigateConnector(BaseConnector):
 
         ret_val, response, status_code = self._make_rest_call(endpoint, None, action_result)
 
-        if (phantom.is_fail(ret_val)):
+        if phantom.is_fail(ret_val):
             self.debug_print(action_result.get_message())
             action_result.set_status(phantom.APP_ERROR, action_result.get_message())
             return phantom.APP_ERROR
 
         # parse the response
-        if (status_code != 204):
+        if status_code != 204:
             data[INVESTIGATE_JSON_SECURITY_INFO] = response
 
         return phantom.APP_SUCCESS
@@ -205,14 +209,14 @@ class CiscoUmbrellaInvestigateConnector(BaseConnector):
 
         endpoint = '/timeline/{0}'.format(domain)
 
-        ret_val, response, status_code = self._make_rest_call(endpoint, None, action_result)
+        ret_val, response, _ = self._make_rest_call(endpoint, None, action_result)
 
-        if (phantom.is_fail(ret_val)):
+        if phantom.is_fail(ret_val):
             self.debug_print(action_result.get_message())
             return action_result.set_status(phantom.APP_ERROR, action_result.get_message())
 
         # parse the response
-        if (response):
+        if response:
             data[INVESTIGATE_JSON_TAG_INFO] = response
             summary.update({INVESTIGATE_JSON_TOTAL_TAG_INFO: len(response)})
         else:
@@ -223,14 +227,14 @@ class CiscoUmbrellaInvestigateConnector(BaseConnector):
     def _add_domain_risk_score_info(self, domain, data, summary, action_result):
         endpoint = '/domains/risk-score/{0}'.format(domain)
 
-        ret_val, response, status_code = self._make_rest_call(endpoint, None, action_result)
+        ret_val, response, _ = self._make_rest_call(endpoint, None, action_result)
 
-        if (phantom.is_fail(ret_val)):
+        if phantom.is_fail(ret_val):
             self.debug_print(action_result.get_message())
             return action_result.set_status(phantom.APP_ERROR, action_result.get_message())
 
         # parse the response
-        if (response):
+        if response:
             data[INVESTIGATE_JSON_INDICATORS] = response.get(INVESTIGATE_JSON_INDICATORS, [])
             risk_score = response.get(INVESTIGATE_JSON_RISK_SCORE, 'Not Found')
             data[INVESTIGATE_JSON_RISK_SCORE] = risk_score
@@ -257,37 +261,37 @@ class CiscoUmbrellaInvestigateConnector(BaseConnector):
         # Category info
         ret_val = self._get_domain_category_info(domain, data, summary, action_result)
 
-        if (not ret_val):
+        if not ret_val:
             return action_result.get_status()
 
         # Recommendations info
         ret_val = self._add_domain_recommendation_info(domain, data, summary, action_result)
 
-        if (not ret_val):
+        if not ret_val:
             return action_result.get_status()
 
         # Relation info
         ret_val = self._add_domain_relation_info(domain, data, summary, action_result)
 
-        if (not ret_val):
+        if not ret_val:
             return action_result.get_status()
 
         # Security info
         ret_val = self._add_domain_security_info(domain, data, summary, action_result)
 
-        if (not ret_val):
+        if not ret_val:
             return action_result.get_status()
 
         # Domain Tagging info
         ret_val = self._add_domain_tagging_info(domain, data, summary, action_result)
 
-        if (not ret_val):
+        if not ret_val:
             return action_result.get_status()
 
         # risk score
         ret_val = self._add_domain_risk_score_info(domain, data, summary, action_result)
 
-        if (not ret_val):
+        if not ret_val:
             return action_result.get_status()
 
         return action_result.set_status(phantom.APP_SUCCESS)
@@ -308,20 +312,20 @@ class CiscoUmbrellaInvestigateConnector(BaseConnector):
 
         ret_val, response, status_code = self._make_rest_call(endpoint, None, action_result)
 
-        if (phantom.is_fail(ret_val)):
+        if phantom.is_fail(ret_val):
             self.debug_print(action_result.get_message())
             return action_result.set_status(phantom.APP_ERROR, action_result.get_message())
 
         # parse the response
-        if (status_code == 204):
+        if status_code == 204:
             status_desc = STATUS_DESC['0']  # UNKNOWN
 
-        if (not response):
+        if not response:
             return action_result.set_status(phantom.APP_ERROR, "Response does not contain any data")
 
         try:
             block_domains = len(response)
-            if (block_domains == 0):
+            if block_domains == 0:
                 status_desc = STATUS_DESC['1']  # SAFE
             else:
                 status_desc = STATUS_DESC['-1']  # MALICIOUS
@@ -329,7 +333,7 @@ class CiscoUmbrellaInvestigateConnector(BaseConnector):
             for blocked_domain in response:
                 action_result.add_data(blocked_domain)
         except Exception as e:
-            self.debug_print("Unable to parse response from the server", e)
+            self.error_print("Unable to parse response from the server", e)
             return action_result.set_status(phantom.APP_ERROR, "Unable to parse response from the server")
 
         action_result.update_summary({INVESTIGATE_JSON_IP_STATUS: status_desc, INVESTIGATE_JSON_TOTAL_BLOCKED_DOMAINS: block_domains})
@@ -351,19 +355,19 @@ class CiscoUmbrellaInvestigateConnector(BaseConnector):
         # Assume that it is a url
         hostname = phantom.get_host_from_url(domain)
         # If it is a URL then the hostname will get extracted else use the domain as is
-        if (hostname):
+        if hostname:
             domain = hostname
 
         slash_pos = domain.find('/')
 
-        if (slash_pos != -1):
+        if slash_pos != -1:
             domain = domain[:slash_pos]
 
         endpoint = '/whois/{0}'.format(domain)
 
-        ret_val, response, status_code = self._make_rest_call(endpoint, None, action_result)
+        ret_val, response, _ = self._make_rest_call(endpoint, None, action_result)
 
-        if (phantom.is_fail(ret_val)):
+        if phantom.is_fail(ret_val):
             self.debug_print(action_result.get_message())
             return action_result.set_status(phantom.APP_ERROR, action_result.get_message())
 
@@ -391,13 +395,13 @@ class CiscoUmbrellaInvestigateConnector(BaseConnector):
 
         ret_val = phantom.APP_SUCCESS
 
-        if (action == self.ACTION_ID_IP_REPUTATION):
+        if action == self.ACTION_ID_IP_REPUTATION:
             ret_val = self._ip_reputation(param)
-        elif (action == self.ACTION_ID_DOMAIN_REPUTATION):
+        elif action == self.ACTION_ID_DOMAIN_REPUTATION:
             ret_val = self._domain_reputation(param)
-        elif (action == self.ACTION_ID_WHOIS_DOMAIN):
+        elif action == self.ACTION_ID_WHOIS_DOMAIN:
             ret_val = self._whois_domain(param)
-        elif (action == phantom.ACTION_ID_TEST_ASSET_CONNECTIVITY):
+        elif action == phantom.ACTION_ID_TEST_ASSET_CONNECTIVITY:
             ret_val = self._test_connectivity(param)
 
         return ret_val

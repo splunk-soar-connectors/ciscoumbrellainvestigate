@@ -4,21 +4,21 @@
     "description": "This app implements investigative actions by querying the Cisco Umbrella Investigate cloud service",
     "type": "reputation",
     "main_module": "ciscoumbrellainvestigate_connector.py",
-    "app_version": "1.1.3",
+    "app_version": "1.2.0",
     "utctime_updated": "2022-02-03T01:13:01.000000Z",
     "product_vendor": "Cisco",
     "product_name": "Cisco Umbrella Investigate",
     "product_version_regex": ".*",
-    "min_phantom_version": "5.1.0",
+    "min_phantom_version": "5.5.0",
     "python_version": "3",
     "fips_compliant": true,
     "publisher": "Splunk",
     "package_name": "phantom_ciscoumbrellainvestigate",
     "logo": "logo_cisco.svg",
     "logo_dark": "logo_cisco_dark.svg",
-    "license": "Copyright (c) 2021-2022 Splunk Inc.",
+    "license": "Copyright (c) 2021-2023 Splunk Inc.",
     "latest_tested_version": [
-        "Cloud, API https://investigate.api.umbrella.com/, December 23 2021"
+        "Cloud, API https://investigate.api.umbrella.com/, March 9 2023"
     ],
     "configuration": {
         "access_token": {
@@ -125,6 +125,13 @@
                         "Geo Popularity Score",
                         "Keyword Score",
                         "Lexical"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.indicators.*.indicator_id",
+                    "data_type": "string",
+                    "example_values": [
+                        "Geo Popularity Score"
                     ]
                 },
                 {
@@ -1105,7 +1112,7 @@
         "wheel": [
             {
                 "module": "certifi",
-                "input_file": "wheels/shared/certifi-2021.10.8-py2.py3-none-any.whl"
+                "input_file": "wheels/py3/certifi-2022.12.7-py3-none-any.whl"
             },
             {
                 "module": "chardet",
@@ -1125,7 +1132,7 @@
             },
             {
                 "module": "urllib3",
-                "input_file": "wheels/shared/urllib3-1.26.8-py2.py3-none-any.whl"
+                "input_file": "wheels/shared/urllib3-1.26.14-py2.py3-none-any.whl"
             }
         ]
     },
@@ -1133,7 +1140,7 @@
         "wheel": [
             {
                 "module": "certifi",
-                "input_file": "wheels/shared/certifi-2021.10.8-py2.py3-none-any.whl"
+                "input_file": "wheels/py3/certifi-2022.12.7-py3-none-any.whl"
             },
             {
                 "module": "chardet",
@@ -1153,7 +1160,7 @@
             },
             {
                 "module": "urllib3",
-                "input_file": "wheels/shared/urllib3-1.26.8-py2.py3-none-any.whl"
+                "input_file": "wheels/shared/urllib3-1.26.14-py2.py3-none-any.whl"
             }
         ]
     }
