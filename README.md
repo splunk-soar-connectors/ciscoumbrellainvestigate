@@ -2,7 +2,7 @@
 # Cisco Umbrella Investigate
 
 Publisher: Splunk  
-Connector Version: 1.2.0  
+Connector Version: 1.2.1  
 Product Vendor: Cisco  
 Product Name: Cisco Umbrella Investigate  
 Product Version Supported (regex): ".\*"  
