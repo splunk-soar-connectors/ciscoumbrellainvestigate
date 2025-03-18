@@ -1,6 +1,6 @@
 # File: ciscoumbrellainvestigate_consts.py
 #
-# Copyright (c) 2021-2023 Splunk Inc.
+# Copyright (c) 2021-2025 Splunk Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -45,7 +45,4 @@ INVESTIGATE_MSG_GET_DOMAIN_TEST = "Querying a single domain to check credentials
 INVESTIGATE_USING_BASE_URL = "Using url: {base_url}"
 
 INVESTIGATE_REST_API_URL = "https://investigate.api.umbrella.com"
-STATUS_DESC = {
-        '0': 'NO STATUS',
-        '1': 'NON MALICIOUS',
-        '-1': 'MALICIOUS'}
+STATUS_DESC = {"0": "NO STATUS", "1": "NON MALICIOUS", "-1": "MALICIOUS"}
