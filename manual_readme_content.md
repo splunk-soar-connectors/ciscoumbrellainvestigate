@@ -1,4 +1,3 @@
-
 # Splunk> SOAR
 
 Welcome to the open-source repository for Splunk> SOAR’s Cisco Umbrella Investigate App.
@@ -20,11 +19,11 @@ Below are the default ports used by Splunk SOAR.
 
 | SERVICE NAME | TRANSPORT PROTOCOL | PORT |
 |--------------|--------------------|------|
-| **http**     | tcp                | 80   |
-| **https**    | tcp                | 443  |
+| **http** | tcp | 80 |
+| **https** | tcp | 443 |
 
 ## Note:
 
--   Kindly refer [official
-    documentation](https://developer.cisco.com/docs/cloud-security/#!introduction) for API rate
-    limits
+- Kindly refer [official
+  documentation](https://developer.cisco.com/docs/cloud-security/#!introduction) for API rate
+  limits
