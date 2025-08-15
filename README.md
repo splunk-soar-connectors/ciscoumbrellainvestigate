@@ -1,9 +1,9 @@
 # Cisco Umbrella Investigate
 
-Publisher: Splunk \
-Connector Version: 1.2.1 \
-Product Vendor: Cisco \
-Product Name: Cisco Umbrella Investigate \
+Publisher: Splunk <br>
+Connector Version: 1.2.1 <br>
+Product Vendor: Cisco <br>
+Product Name: Cisco Umbrella Investigate <br>
 Minimum Product Version: 5.5.0
 
 This app implements investigative actions by querying the Cisco Umbrella Investigate cloud service
@@ -48,16 +48,16 @@ VARIABLE | REQUIRED | TYPE | DESCRIPTION
 
 ### Supported Actions
 
-[test connectivity](#action-test-connectivity) - Validate the asset configuration for connectivity \
-[domain reputation](#action-domain-reputation) - Query Cisco Umbrella Investigate for domain info \
-[ip reputation](#action-ip-reputation) - Query Cisco Umbrella Investigate for IP info \
+[test connectivity](#action-test-connectivity) - Validate the asset configuration for connectivity <br>
+[domain reputation](#action-domain-reputation) - Query Cisco Umbrella Investigate for domain info <br>
+[ip reputation](#action-ip-reputation) - Query Cisco Umbrella Investigate for IP info <br>
 [whois domain](#action-whois-domain) - Run a whois query on Cisco Umbrella Investigate for the given domain
 
 ## action: 'test connectivity'
 
 Validate the asset configuration for connectivity
 
-Type: **test** \
+Type: **test** <br>
 Read only: **True**
 
 #### Action Parameters
@@ -72,7 +72,7 @@ No Output
 
 Query Cisco Umbrella Investigate for domain info
 
-Type: **investigate** \
+Type: **investigate** <br>
 Read only: **True**
 
 #### Action Parameters
@@ -140,7 +140,7 @@ summary.total_objects_successful | numeric | | 1 |
 
 Query Cisco Umbrella Investigate for IP info
 
-Type: **investigate** \
+Type: **investigate** <br>
 Read only: **True**
 
 #### Action Parameters
@@ -167,7 +167,7 @@ summary.total_objects_successful | numeric | | 1 |
 
 Run a whois query on Cisco Umbrella Investigate for the given domain
 
-Type: **investigate** \
+Type: **investigate** <br>
 Read only: **True**
 
 #### Action Parameters

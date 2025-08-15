@@ -3,3 +3,4 @@
 * Update Python dependencies for Python 3.13 support
 * Update NOTICE file with updated dependencies
 * Apply pre-commit fixes
+* updated dependencies for python 3.13
