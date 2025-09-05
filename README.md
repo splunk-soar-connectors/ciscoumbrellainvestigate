@@ -1,7 +1,7 @@
 # Cisco Umbrella Investigate
 
 Publisher: Splunk <br>
-Connector Version: 1.2.1 <br>
+Connector Version: 1.2.2 <br>
 Product Vendor: Cisco <br>
 Product Name: Cisco Umbrella Investigate <br>
 Minimum Product Version: 5.5.0
