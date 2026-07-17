@@ -15,6 +15,8 @@
 #
 #
 # Phantom App imports
+from urllib.parse import quote
+
 import phantom.app as phantom
 import requests
 import simplejson as json
@@ -33,6 +35,10 @@ class CiscoUmbrellaInvestigateConnector(BaseConnector):
     def __init__(self):
         # Call the BaseConnectors init first
         super().__init__()
+
+    @staticmethod
+    def _quote_path_segment(value):
+        return quote(str(value), safe="")
 
     def initialize(self):
         # Base URL
@@ -117,7 +123,7 @@ class CiscoUmbrellaInvestigateConnector(BaseConnector):
         return action_result.set_status(phantom.APP_SUCCESS)
 
     def _get_domain_category_info(self, domain, data, summary, action_result):
-        endpoint = f"/domains/categorization/{domain}?showLabels"
+        endpoint = f"/domains/categorization/{self._quote_path_segment(domain)}?showLabels"
 
         ret_val, response, _ = self._make_rest_call(endpoint, None, action_result)
 
@@ -149,7 +155,7 @@ class CiscoUmbrellaInvestigateConnector(BaseConnector):
         return phantom.APP_SUCCESS
 
     def _add_domain_relation_info(self, domain, data, summary, action_result):
-        endpoint = f"/links/name/{domain}.json"
+        endpoint = f"/links/name/{self._quote_path_segment(domain)}.json"
 
         ret_val, response, _ = self._make_rest_call(endpoint, None, action_result)
 
@@ -169,7 +175,7 @@ class CiscoUmbrellaInvestigateConnector(BaseConnector):
         return phantom.APP_SUCCESS
 
     def _add_domain_recommendation_info(self, domain, data, summary, action_result):
-        endpoint = f"/recommendations/name/{domain}.json"
+        endpoint = f"/recommendations/name/{self._quote_path_segment(domain)}.json"
 
         ret_val, response, _ = self._make_rest_call(endpoint, None, action_result)
 
@@ -189,7 +195,7 @@ class CiscoUmbrellaInvestigateConnector(BaseConnector):
         return phantom.APP_SUCCESS
 
     def _add_domain_security_info(self, domain, data, summary, action_result):
-        endpoint = f"/security/name/{domain}.json"
+        endpoint = f"/security/name/{self._quote_path_segment(domain)}.json"
 
         ret_val, response, status_code = self._make_rest_call(endpoint, None, action_result)
 
@@ -205,7 +211,7 @@ class CiscoUmbrellaInvestigateConnector(BaseConnector):
         return phantom.APP_SUCCESS
 
     def _add_domain_tagging_info(self, domain, data, summary, action_result):
-        endpoint = f"/timeline/{domain}"
+        endpoint = f"/timeline/{self._quote_path_segment(domain)}"
 
         ret_val, response, _ = self._make_rest_call(endpoint, None, action_result)
 
@@ -223,7 +229,7 @@ class CiscoUmbrellaInvestigateConnector(BaseConnector):
         return phantom.APP_SUCCESS
 
     def _add_domain_risk_score_info(self, domain, data, summary, action_result):
-        endpoint = f"/domains/risk-score/{domain}"
+        endpoint = f"/domains/risk-score/{self._quote_path_segment(domain)}"
 
         ret_val, response, _ = self._make_rest_call(endpoint, None, action_result)
 
@@ -304,7 +310,7 @@ class CiscoUmbrellaInvestigateConnector(BaseConnector):
 
         ip = param[INVESTIGATE_JSON_IP]
 
-        endpoint = f"/ips/{ip}/latest_domains"
+        endpoint = f"/ips/{self._quote_path_segment(ip)}/latest_domains"
 
         ret_val, response, status_code = self._make_rest_call(endpoint, None, action_result)
 
