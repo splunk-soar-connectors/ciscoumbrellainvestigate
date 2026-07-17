@@ -318,25 +318,16 @@ class CiscoUmbrellaInvestigateConnector(BaseConnector):
             self.debug_print(action_result.get_message())
             return action_result.set_status(phantom.APP_ERROR, action_result.get_message())
 
-        # parse the response
         if status_code == 204:
             status_desc = STATUS_DESC["0"]  # UNKNOWN
-
-        if not response:
-            return action_result.set_status(phantom.APP_ERROR, "Response does not contain any data")
-
-        try:
+            block_domains = 0
+        elif not isinstance(response, list):
+            return action_result.set_status(phantom.APP_ERROR, "Unable to parse response from the server")
+        else:
             block_domains = len(response)
-            if block_domains == 0:
-                status_desc = STATUS_DESC["1"]  # SAFE
-            else:
-                status_desc = STATUS_DESC["-1"]  # MALICIOUS
-
+            status_desc = STATUS_DESC["1"] if block_domains == 0 else STATUS_DESC["-1"]
             for blocked_domain in response:
                 action_result.add_data(blocked_domain)
-        except Exception as e:
-            self.error_print("Unable to parse response from the server", e)
-            return action_result.set_status(phantom.APP_ERROR, "Unable to parse response from the server")
 
         action_result.update_summary({INVESTIGATE_JSON_IP_STATUS: status_desc, INVESTIGATE_JSON_TOTAL_BLOCKED_DOMAINS: block_domains})
 
