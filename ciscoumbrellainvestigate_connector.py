@@ -1,6 +1,6 @@
 # File: ciscoumbrellainvestigate_connector.py
 #
-# Copyright (c) 2021-2025 Splunk Inc.
+# Copyright (c) 2021-2026 Splunk Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,6 +15,8 @@
 #
 #
 # Phantom App imports
+from urllib.parse import quote
+
 import phantom.app as phantom
 import requests
 import simplejson as json
@@ -33,6 +35,10 @@ class CiscoUmbrellaInvestigateConnector(BaseConnector):
     def __init__(self):
         # Call the BaseConnectors init first
         super().__init__()
+
+    @staticmethod
+    def _quote_path_segment(value):
+        return quote(str(value), safe="")
 
     def initialize(self):
         # Base URL
@@ -117,7 +123,7 @@ class CiscoUmbrellaInvestigateConnector(BaseConnector):
         return action_result.set_status(phantom.APP_SUCCESS)
 
     def _get_domain_category_info(self, domain, data, summary, action_result):
-        endpoint = f"/domains/categorization/{domain}?showLabels"
+        endpoint = f"/domains/categorization/{self._quote_path_segment(domain)}?showLabels"
 
         ret_val, response, _ = self._make_rest_call(endpoint, None, action_result)
 
@@ -149,7 +155,7 @@ class CiscoUmbrellaInvestigateConnector(BaseConnector):
         return phantom.APP_SUCCESS
 
     def _add_domain_relation_info(self, domain, data, summary, action_result):
-        endpoint = f"/links/name/{domain}.json"
+        endpoint = f"/links/name/{self._quote_path_segment(domain)}.json"
 
         ret_val, response, _ = self._make_rest_call(endpoint, None, action_result)
 
@@ -169,7 +175,7 @@ class CiscoUmbrellaInvestigateConnector(BaseConnector):
         return phantom.APP_SUCCESS
 
     def _add_domain_recommendation_info(self, domain, data, summary, action_result):
-        endpoint = f"/recommendations/name/{domain}.json"
+        endpoint = f"/recommendations/name/{self._quote_path_segment(domain)}.json"
 
         ret_val, response, _ = self._make_rest_call(endpoint, None, action_result)
 
@@ -189,7 +195,7 @@ class CiscoUmbrellaInvestigateConnector(BaseConnector):
         return phantom.APP_SUCCESS
 
     def _add_domain_security_info(self, domain, data, summary, action_result):
-        endpoint = f"/security/name/{domain}.json"
+        endpoint = f"/security/name/{self._quote_path_segment(domain)}.json"
 
         ret_val, response, status_code = self._make_rest_call(endpoint, None, action_result)
 
@@ -205,7 +211,7 @@ class CiscoUmbrellaInvestigateConnector(BaseConnector):
         return phantom.APP_SUCCESS
 
     def _add_domain_tagging_info(self, domain, data, summary, action_result):
-        endpoint = f"/timeline/{domain}"
+        endpoint = f"/timeline/{self._quote_path_segment(domain)}"
 
         ret_val, response, _ = self._make_rest_call(endpoint, None, action_result)
 
@@ -223,7 +229,7 @@ class CiscoUmbrellaInvestigateConnector(BaseConnector):
         return phantom.APP_SUCCESS
 
     def _add_domain_risk_score_info(self, domain, data, summary, action_result):
-        endpoint = f"/domains/risk-score/{domain}"
+        endpoint = f"/domains/risk-score/{self._quote_path_segment(domain)}"
 
         ret_val, response, _ = self._make_rest_call(endpoint, None, action_result)
 
@@ -304,7 +310,7 @@ class CiscoUmbrellaInvestigateConnector(BaseConnector):
 
         ip = param[INVESTIGATE_JSON_IP]
 
-        endpoint = f"/ips/{ip}/latest_domains"
+        endpoint = f"/ips/{self._quote_path_segment(ip)}/latest_domains"
 
         ret_val, response, status_code = self._make_rest_call(endpoint, None, action_result)
 
@@ -312,25 +318,16 @@ class CiscoUmbrellaInvestigateConnector(BaseConnector):
             self.debug_print(action_result.get_message())
             return action_result.set_status(phantom.APP_ERROR, action_result.get_message())
 
-        # parse the response
         if status_code == 204:
             status_desc = STATUS_DESC["0"]  # UNKNOWN
-
-        if not response:
-            return action_result.set_status(phantom.APP_ERROR, "Response does not contain any data")
-
-        try:
+            block_domains = 0
+        elif not isinstance(response, list):
+            return action_result.set_status(phantom.APP_ERROR, "Unable to parse response from the server")
+        else:
             block_domains = len(response)
-            if block_domains == 0:
-                status_desc = STATUS_DESC["1"]  # SAFE
-            else:
-                status_desc = STATUS_DESC["-1"]  # MALICIOUS
-
+            status_desc = STATUS_DESC["1"] if block_domains == 0 else STATUS_DESC["-1"]
             for blocked_domain in response:
                 action_result.add_data(blocked_domain)
-        except Exception as e:
-            self.error_print("Unable to parse response from the server", e)
-            return action_result.set_status(phantom.APP_ERROR, "Unable to parse response from the server")
 
         action_result.update_summary({INVESTIGATE_JSON_IP_STATUS: status_desc, INVESTIGATE_JSON_TOTAL_BLOCKED_DOMAINS: block_domains})
 
