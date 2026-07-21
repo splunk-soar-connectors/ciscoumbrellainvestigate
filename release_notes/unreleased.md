@@ -1,4 +1,1 @@
 **Unreleased**
-
-* Encoded domain and IP values before including them in Investigate API paths.
-* Correctly classified empty IP reputation responses as unknown or non-malicious.
