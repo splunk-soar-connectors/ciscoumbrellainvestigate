@@ -1,3 +1,1 @@
 **Unreleased**
-
-* Rejected empty and exact dot-segment domain values before constructing Investigate API paths.
