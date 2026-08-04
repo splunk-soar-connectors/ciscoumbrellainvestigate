@@ -256,6 +256,8 @@ class CiscoUmbrellaInvestigateConnector(BaseConnector):
         self.save_progress(phantom.APP_PROG_CONNECTING_TO_ELLIPSES, self._host)
 
         domain = param[INVESTIGATE_JSON_DOMAIN]
+        if not isinstance(domain, str) or not domain or domain in (".", ".."):
+            return action_result.set_status(phantom.APP_ERROR, "Please provide a valid domain")
 
         # Add the data that will include info about this domain
         data = action_result.add_data({})
